@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ---- Reading Progress Bar ----
   const progressBar = document.getElementById('readingProgress');
-  
+
   function updateProgress() {
     const scrollTop = window.scrollY;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ---- Navbar Scroll Effect ----
   const navbar = document.getElementById('navbar');
-  
+
   function handleNavScroll() {
     if (window.scrollY > 50) {
       navbar.classList.add('scrolled');
@@ -139,12 +139,70 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // ---- Interactive Calculator (B2B Loss) ----
+  const calcTabs = document.querySelectorAll('.calc-tab');
+  const calcAmount = document.getElementById('calc-display-amount');
+  const calcCaption = document.getElementById('calc-display-caption');
+
+  const calcData = {
+    'month': {
+      value: 10000,
+      caption: 'Dinheiro deixado na mesa para os distribuidores ágeis e concorrência direta na sua região, apenas neste mês.'
+    },
+    'year': {
+      value: 120000,
+      caption: 'Faturamento mínimo que uma fábrica de médio porte deixa de faturar no ano por não possuir catálogo digital rápido.'
+    },
+    'five-years': {
+      value: 600000,
+      caption: 'Prejuízo escalável. Clientes atacadistas que foram fidelizados por outras marcas B2B porque você não estava no Google.'
+    }
+  };
+
+  if (calcTabs.length && calcAmount) {
+    calcTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class
+        calcTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // Get data
+        const period = tab.dataset.period;
+        const data = calcData[period];
+
+        // Animate count and update caption
+        const currentValue = parseInt(calcAmount.textContent.replace(/\./g, ''));
+        animateCounterValue(calcAmount, currentValue, data.value, 800);
+        calcCaption.textContent = data.caption;
+      });
+    });
+  }
+
+  // helper to animate any counter from A to B
+  function animateCounterValue(el, start, target, duration) {
+    const startTime = performance.now();
+    function update(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.floor(start + (target - start) * eased);
+      el.textContent = value.toLocaleString('pt-BR');
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        el.textContent = target.toLocaleString('pt-BR');
+      }
+    }
+    requestAnimationFrame(update);
+  }
+
   // ---- Smooth Scroll for Anchor Links ----
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
+    anchor.addEventListener('click', function (e) {
       const targetId = this.getAttribute('href');
       if (targetId === '#') return;
-      
+
       const targetElement = document.querySelector(targetId);
       if (targetElement) {
         e.preventDefault();
@@ -164,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
       const value = Math.floor(eased * target);
       el.textContent = value.toLocaleString('pt-BR');
-      
+
       if (progress < 1) {
         requestAnimationFrame(update);
       } else {
@@ -197,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('mousemove', (e) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 2;
       const y = (e.clientY / window.innerHeight - 0.5) * 2;
-      
+
       shapes.forEach((shape, i) => {
         const speed = (i + 1) * 8;
         shape.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
